@@ -54,13 +54,32 @@ html, body {
     height: 80px;
     border: 1px solid black;
     font-size: 2rem;
-
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-
     padding-right: 10px;
+
+    transition: font-size 0.2s;
+    line-height: 1.2;
+
+    /* 숫자 벗어난 경우 */
+    text-align: right;              /* 오른쪽 정렬 */
+    white-space: normal;            /* 줄바꿈 허용 */
+    overflow-wrap: break-word;
+    word-break: break-all;
+
+    overflow: hidden;
+    
+    display: flex;
+    justify-content: flex-end;   /* 가로: 오른쪽 정렬 */
+    align-items: center;         /* 세로: 중앙 정렬 */
 }
+
+.display.medium {
+    font-size: 24px;
+}
+
+.display.small {
+    font-size: 18px;
+}
+
 /* grid 사용 버전 */
 /*
 .buttons {
@@ -97,29 +116,29 @@ html, body {
     justify-content: center;
     align-items: center;
 }
-  .button:hover {
+.button:hover {
     background-color: #666;
-  }
+}
 
-  .button:active {
+.button:active {
     background-color: #ffffff;
-  }
+}
   
-  /* 숫자 0은 2칸 차지 */
-  .zero {
+/* 숫자 0은 2칸 차지 */
+.zero {
    /* grid-column: span 2; */
    width: 50%;
-  }
+}
   
-  /* 연산자 버튼 색 */
-  .operator {
+/* 연산자 버튼 색 */
+.operator {
     background-color: #ff9500;
     color: black;
-  }
+}
 
   
-  /* 기능 버튼 색 */
-  .function {
+/* 기능 버튼 색 */
+.function {
     background-color: #999;
     color: black;
-  }
+}
