@@ -72,12 +72,16 @@ html, body {
     align-items: center;         /* 세로: 중앙 정렬 */
 }
 
+.display.large {
+    font-size: 2rem;
+}
+
 .display.medium {
-    font-size: 24px;
+    font-size: 1.5rem;
 }
 
 .display.small {
-    font-size: 18px;
+    font-size: 1rem;
 }
 
 /* grid 사용 버전 */

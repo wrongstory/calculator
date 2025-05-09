@@ -4,11 +4,11 @@ const buttons = document.querySelectorAll('.button');
 
 // 디스플레이 이탈 입력 시, 폰트 크기 조절
 function resizeFont() {
-    display.classList.remove('small', 'medium');
+    display.classList.remove('small', 'medium', 'large');
 
     const length = display.textContent.length;
 
-    if(length <= 12) display.computedStyleMap.fontSize = '2rem';
+    if(length <= 12) display.classList.add('large');
     else if(length <= 38) display.classList.add('medium');
     else display.classList.add('small');
 }
@@ -39,7 +39,7 @@ buttons.forEach(button => {
         // C 버튼
         if(value === 'C') {
             display.textContent = '0';
-            display.classList.remove('small', 'medium');
+            display.classList.remove('small', 'medium', 'large');
             console.clear();
             console.log('C버튼');
         }   
