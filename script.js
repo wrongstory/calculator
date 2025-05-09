@@ -34,7 +34,6 @@ buttons.forEach(button => {
             else {
                 display.textContent += value;
             }
-             
         }
         // C 버튼
         if(value === 'C') {
