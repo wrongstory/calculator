@@ -61,10 +61,22 @@ buttons.forEach(button => {
                 // 연속 계산
                 firstOperand = result;
                 gotOperator = true;
+
+                // 계산 후 모든 연산자 강조 해제
+                buttons.forEach(btn => btn.classList.remove('active-operator'));
+                return; // 여기서 return 안 하면 아래 operator = '=' 되는 문제 생김
             }   
             if(firstOperand === null) firstOperand = display.textContent;
+
+            // 연산자 저장
             operator = value;
             gotOperator = true;
+
+            // 🔥 연산자 버튼 강조 표시
+            buttons.forEach(btn => btn.classList.remove('active-operator')); // 이전 것 제거
+            button.classList.add('active-operator'); // 현재 버튼 강조
+
+            // 확인 로그
             console.log(`${firstOperand}`);
             console.log(`${operator}`);
         }
