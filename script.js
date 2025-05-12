@@ -52,22 +52,26 @@ buttons.forEach(button => {
         // 클래스가 operator인 경우에만 처리
         if(button.classList.contains('operator')) {
             if(value === '=') {
-                if(firstOperand !== null && operator !== null) {
+                if(secondOperand === null) {
                     secondOperand = display.textContent;
-
-                    if(!gotOperator || (gotOperator && secondOperand !== firstOperand)){
-                        // 오류1 문자열을 숫자로 (number로 변환 해서 해결)
-                        const result = calculate(firstOperand, secondOperand, operator);
-                        // 결과값 표시
-                        display.textContent = result;
-                        // 연속 계산
-                        firstOperand = result;
-                    }             
+                }
+                if(firstOperand !== null && operator !== null) {
+                    // 오류1 문자열을 숫자로 (number로 변환 해서 해결)
+                    const result = calculate(firstOperand, secondOperand, operator);
+                    // 결과값 표시
+                    display.textContent = result;
+                    // 연속 계산
+                    firstOperand = result;            
                     gotOperator = true;
 
                     // 계산 후 모든 연산자 강조 해제
-                    buttons.forEach(btn => btn.classList.remove('active-operator'));
+                    buttons.forEach(btn => {
+                        if(btn.classList.contains('operator') && btn.textContent !== operator) {
+                            btn.classList.remove('active-operator');
+                        }
+                    });
                 }
+                resizeFont();
                 return; // 여기서 return 안 하면 아래 operator = '=' 되는 문제 생김
             }   
             if(firstOperand !== null && operator !== null && !gotOperator) {
@@ -104,6 +108,7 @@ buttons.forEach(button => {
             else if(gotOperator) {
                 display.textContent = value === '.' ? '0.' : value;
                 gotOperator = false;
+                secondOperand = null;
             }
             // 0이 아닌 경우 클릭한 숫자를 뒤에 추가
             else {
@@ -115,6 +120,7 @@ buttons.forEach(button => {
             // C 버튼
             if(value === 'C') {
                 firstOperand = null;
+                secondOperand = null;
                 operator = null;
                 gotOperator = null; 
                 display.textContent = '0';
@@ -123,17 +129,18 @@ buttons.forEach(button => {
                 console.clear();
                 console.log('C버튼');
             }
-            else if(value === '%') {
-                display.textContent = parseFloat(display.textContent) / 100;
-                resizeFont();
-                return;
-            }
             else if (value === '±') {
                 let current = parseFloat(display.textContent);
                 if (current !== 0) {
                     display.textContent = (current * -1).toString();
                 }
+                secondOperand = display.textContent;
                 resizeFont();
+                return;
+            }
+            else if (value === '%') {
+                display.textContent = parseFloat(display.textContent) / 100;
+                resizeFont(); // 글자 수 바뀌니까 호출
                 return;
             }
         }
