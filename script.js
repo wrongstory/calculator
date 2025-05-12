@@ -20,22 +20,22 @@ function resizeFont() {
 
 function calculate(first, second, operate) {
     const num1 = Number(first);
+    const num2 = parseFloat(second);
     switch(operate) {
         case '+':
-            console.log(num1+second);
-            return num1 + second;
+            return num1 + num2;
         break;
 
         case '-':
-            return num1 - second;
+            return num1 - num2;
         break;
 
         case '*':
-            return num1 * second;
+            return num1 * num2;
         break;
 
         case '/':
-            return second !== 0 ? num1 / second : 'Error';
+            return num2 !== 0 ? num1 / num2 : 'Error';
         break;
         default:
             return 'Error';
@@ -52,21 +52,31 @@ buttons.forEach(button => {
         // 클래스가 operator인 경우에만 처리
         if(button.classList.contains('operator')) {
             if(value === '=') {
-                secondOperand = display.textContent;
-                console.log(operator);
-                // 오류1 문자열을 숫자로 (number로 변환 해서 해결)
-                const result = calculate(firstOperand, parseFloat(secondOperand), operator);
-                // 결과값 표시
-                display.textContent = result;
-                // 연속 계산
-                firstOperand = result;
-                gotOperator = true;
+                if(firstOperand !== null && operator !== null) {
+                    secondOperand = display.textContent;
 
-                // 계산 후 모든 연산자 강조 해제
-                buttons.forEach(btn => btn.classList.remove('active-operator'));
+                    if(!gotOperator || (gotOperator && secondOperand !== firstOperand)){
+                        // 오류1 문자열을 숫자로 (number로 변환 해서 해결)
+                        const result = calculate(firstOperand, secondOperand, operator);
+                        // 결과값 표시
+                        display.textContent = result;
+                        // 연속 계산
+                        firstOperand = result;
+                    }             
+                    gotOperator = true;
+
+                    // 계산 후 모든 연산자 강조 해제
+                    buttons.forEach(btn => btn.classList.remove('active-operator'));
+                }
                 return; // 여기서 return 안 하면 아래 operator = '=' 되는 문제 생김
             }   
-            if(firstOperand === null) firstOperand = display.textContent;
+            if(firstOperand !== null && operator !== null && !gotOperator) {
+                // 두 번째 연산자 눌럿을 때 (이전계산 수행)
+                secondOperand = display.textContent;
+                const result = calculate(firstOperand, secondOperand, operator);
+                display.textContent = result;
+                firstOperand = result;
+            } else if(firstOperand === null) firstOperand = display.textContent;
 
             // 연산자 저장
             operator = value;
@@ -77,11 +87,10 @@ buttons.forEach(button => {
             button.classList.add('active-operator'); // 현재 버튼 강조
 
             // 확인 로그
-            console.log(`${firstOperand}`);
-            console.log(`${operator}`);
+            console.log(`${firstOperand} ${operator}`);
         }
         // 클래스가 number인 경우에만 처리
-        if(button.classList.contains('number')) {
+        else if(button.classList.contains('number')) {
 
             // 소수점 처리. .이 눌려졋고 이미 디스플레이에 .이 있을 경우
             if(value === '.' && display.textContent.includes('.')) return; // 아무것도 안함
@@ -101,17 +110,33 @@ buttons.forEach(button => {
                 display.textContent += value;
             }
         }
-        // C 버튼
-        if(value === 'C') {
-            firstOperand = null;
-            operator = null;
-            gotOperator = null; 
-            display.textContent = '0';
-            display.classList.remove('small', 'medium', 'large');
-            console.clear();
-            console.log('C버튼');
+
+        else if(button.classList.contains('function')){ 
+            // C 버튼
+            if(value === 'C') {
+                firstOperand = null;
+                operator = null;
+                gotOperator = null; 
+                display.textContent = '0';
+                display.classList.remove('small', 'medium', 'large');
+                buttons.forEach(btn => btn.classList.remove('active-operator')); // 이전 것 제거
+                console.clear();
+                console.log('C버튼');
+            }
+            else if(value === '%') {
+                display.textContent = parseFloat(display.textContent) / 100;
+                resizeFont();
+                return;
+            }
+            else if (value === '±') {
+                let current = parseFloat(display.textContent);
+                if (current !== 0) {
+                    display.textContent = (current * -1).toString();
+                }
+                resizeFont();
+                return;
+            }
         }
-             
         // 폰트 크기 조절
         resizeFont();
     }); 
