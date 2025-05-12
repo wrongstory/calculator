@@ -5,7 +5,7 @@ const buttons = document.querySelectorAll('.button');
 let firstOperand = null;
 let secondOperand = null;
 let operator = null;
-let gotOperator = null;
+let isNewInput = false;
 
 // 디스플레이 이탈 입력 시, 폰트 크기 조절
 function resizeFont() {
@@ -30,6 +30,16 @@ function calculate(first, second, operate) {
             return 'Error';
     }
 }
+// 상태 초기화
+function clearAll() {
+    firstOperand = null;
+    secondOperand = null;
+    operator = null;
+    isNewInput = false;
+    display.textContent = '0';
+    buttons.forEach(btn => btn.classList.remove('active-operator'));
+    display.classList.remove('small', 'medium', 'large');
+}
 
 // 버튼 클릭 이벤트 리스터 추가
 buttons.forEach(button => {
@@ -51,7 +61,7 @@ buttons.forEach(button => {
                     display.textContent = result;
                     // 연속 계산
                     firstOperand = result;            
-                    gotOperator = true;
+                    isNewInput = true;
 
                     // 계산 후 모든 연산자 강조 해제
                     buttons.forEach(btn => {
@@ -65,14 +75,14 @@ buttons.forEach(button => {
             }   
             // 연산자가 눌리는 경우 secondOperand가 있으면 초기화
             // 오류 2. 없을 경우 연속 계산 수행중, 이탈 시 계산 불능됨
-            if(gotOperator && secondOperand !== null) {
+            if(isNewInput && secondOperand !== null) {
                 firstOperand = display.textContent;
                 secondOperand = null;
-                gotOperator = true;
+                isNewInput = true;
             }
 
             // 기존 연산자 누르고 숫자 안누른 상태면 그냥 operator만 갱신함
-            if(gotOperator && secondOperand === null) {
+            if(isNewInput && secondOperand === null) {
                 operator = value;
                 buttons.forEach(btn => btn.classList.remove('active-operator'));
                 button.classList.add('active-operator');
@@ -80,8 +90,7 @@ buttons.forEach(button => {
             }
             
             // 두 번째 연산자 눌럿을 때 (이전계산 수행)
-            if(firstOperand !== null && operator !== null && !gotOperator) {
-                
+            if(firstOperand !== null && operator !== null && !isNewInput) {
                 secondOperand = display.textContent;
                 const result = calculate(firstOperand, secondOperand, operator);
                 display.textContent = result;
@@ -90,7 +99,7 @@ buttons.forEach(button => {
 
             // 연산자 저장
             operator = value;
-            gotOperator = true;
+            isNewInput = true;
 
             // 🔥 연산자 버튼 강조 표시
             buttons.forEach(btn => btn.classList.remove('active-operator')); // 이전 것 제거
@@ -99,6 +108,7 @@ buttons.forEach(button => {
             // 확인 로그
             console.log(`${firstOperand} ${operator}`);
         }
+
         // 클래스가 number인 경우에만 처리
         else if(button.classList.contains('number')) {
 
@@ -106,8 +116,8 @@ buttons.forEach(button => {
             if(value === '.' && display.textContent.includes('.')) return; // 아무것도 안함
 
             // 디스플레이가 초기값인 경우 클릭한 숫자로 바뀜
-            if(display.textContent === '0' || gotOperator) {
-                gotOperator = false;
+            if(display.textContent === '0' || isNewInput) {
+                isNewInput = false;
                 
                 // .이 가장 처음 눌렸다면 0. 으로 시작
                 secondOperand = value === '.' ? '0.' : value;
@@ -123,33 +133,26 @@ buttons.forEach(button => {
             }
         }
 
+        // 클래스가 function일 경우에만 처리
         else if(button.classList.contains('function')){ 
             // C 버튼
             if(value === 'C') {
-                firstOperand = null;
-                secondOperand = null;
-                operator = null;
-                gotOperator = null; 
-                display.textContent = '0';
-                display.classList.remove('small', 'medium', 'large');
-                buttons.forEach(btn => btn.classList.remove('active-operator')); // 이전 것 제거
+                clearAll()
                 console.clear();
                 console.log('C버튼');
             }
             else if (value === '±') {
                 const current = parseFloat(display.textContent);
-                if (!isNaN(current)) {
-                    const inverted = (current * -1).toString();
-                    display.textContent = inverted;
+                const inverted = (current * -1).toString();
+                display.textContent = inverted;
             
-                    // ✅ 상태에 따라 값 동기화
-                    if (gotOperator) {
-                        // 연산자 입력 후 숫자를 입력 중이면 → secondOperand 반영
-                        secondOperand = inverted;
-                    } else {
-                        // 연산자 누르기 전이거나 연산 직후라면 → firstOperand 반영
-                        firstOperand = inverted;
-                    }
+                // = 중복 입력 계산 기능으로 
+                if (isNewInput) {
+                    // 연산자 입력 후 숫자를 입력 중이면 → secondOperand 반영
+                    secondOperand = inverted;
+                } else {
+                    // 연산자 누르기 전이거나 연산 직후라면 → firstOperand 반영
+                    firstOperand = inverted;
                 }
                 console.log(`${firstOperand} ${secondOperand}`);
                 resizeFont();
@@ -159,7 +162,9 @@ buttons.forEach(button => {
                 const current = parseFloat(display.textContent);
                 const percent = current / 100;
                 display.textContent = percent.toString();
-                if (gotOperator) secondOperand = percent;
+                
+                // = 중복 입력 계산으로 인한 추가
+                if (isNewInput) secondOperand = percent;
                     else firstOperand = percent;
                 resizeFont(); // 글자 수 바뀌니까 호출
                 return;
