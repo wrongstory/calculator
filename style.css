@@ -1,154 +1,120 @@
-/* 모든 요소의 기본 여백 제거 */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
 }
 
-/* HTML과 Body의 기본 설정 */
 html, body {
     height: 100%;
-
+    background: radial-gradient(circle at center, #111 0%, #000 100%);
     display: flex;
     justify-content: center;
     align-items: center;
+    color: #fff;
 }
 
-/* flex 를 사용하여 컨테이너가 화면의 중앙에 위치하도록 */
 .calculator-container {
     display: flex;
-    flex-direction: column; /* 세로 방향 정렬 */
-    border: 1px solid black;
-    padding: 20px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 25px;
     width: 380px;
-    background-color: white;
+    border-radius: 20px;
+    background: rgba(20, 20, 20, 0.85);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+    border: 2px solid #00ffff40;
 }
 
 .header-bar {
     display: flex;
-    gap: 8px;       /* 버튼 간 간격 */
-    padding-bottom: 5px;
+    gap: 8px;
+    padding-bottom: 10px;
 }
 
 .dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    display: inline-block;
 }
 
-.red {
-    background-color: red;
-}
-
-.yellow {
-    background-color: yellow;
-}
-
-.green {
-    background-color: green;
-}
+.red { background-color: red; }
+.yellow { background-color: yellow; }
+.green { background-color: limegreen; }
 
 .display {
     width: 100%;
     height: 80px;
-    border: 1px solid black;
+    background: #111;
+    color: #00ffff;
     font-size: 2rem;
-    padding-right: 10px;
-
-    transition: font-size 0.2s;
-    line-height: 1.2;
-
-    /* 숫자 벗어난 경우 */
-    text-align: right;              /* 오른쪽 정렬 */
-    white-space: normal;            /* 줄바꿈 허용 */
-    overflow-wrap: break-word;
-    word-break: break-all;
-
-    overflow: hidden;
-    
+    text-align: right;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 8px #00ffff60;
     display: flex;
-    justify-content: flex-end;   /* 가로: 오른쪽 정렬 */
-    align-items: center;         /* 세로: 중앙 정렬 */
+    justify-content: flex-end;
+    align-items: center;
+    overflow: hidden;
+    word-break: break-all;
 }
 
-.display.large {
-    font-size: 2rem;
-}
+.display.large { font-size: 2rem; }
+.display.medium { font-size: 1.5rem; }
+.display.small { font-size: 1.1rem; }
 
-.display.medium {
-    font-size: 1.5rem;
-}
-
-.display.small {
-    font-size: 1rem;
-}
-
-/* grid 사용 버전 */
-/*
-.buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    margin-top: 10px;
-    width: 100%;
-    height: 380px;
-    background-color: #222;
-}
-
-.button {
-    padding: 20px;
-    font-size: 24px;
-    border: 1px solid black;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-*/  
 .buttons {
     display: flex;
     flex-wrap: wrap;
-    margin-top: 10px;
     width: 100%;
-    height: 380px;
-    background-color: #222;
+    background-color: transparent;
+    gap: 10px;
 }
+
 .button {
-    width: 25%; /* 한 줄에 4개로 정렬되도록 */
-    font-size: 22px;
-    border: 1px solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: calc(25% - 7.5px);
+    height: 70px;
+    font-size: 20px;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
+
 .button:hover {
-    background-color: #666;
+    background: #00ffff33;
+    box-shadow: 0 0 12px #00ffff88;
 }
 
 .button:active {
-    background-color: #ffffff;
-}
-  
-/* 숫자 0은 2칸 차지 */
-.zero {
-   /* grid-column: span 2; */
-   width: 50%;
-}
-  
-/* 연산자 버튼 색 */
-.operator {
-    background-color: #ff9500;
-    color: black;
+    transform: scale(0.95);
+    background: #00ffff55;
+    box-shadow: 0 0 18px #00ffffaa;
 }
 
-  
-/* 기능 버튼 색 */
+.zero {
+    width: calc(50% - 5px);
+}
+
+.operator {
+    background: #ff008c;
+    color: white;
+}
+
+.operator:hover {
+    background: #ff66c4;
+    box-shadow: 0 0 12px #ff66c4;
+}
+
 .function {
-    background-color: #999;
-    color: black;
+    background: #555;
+    color: #fff;
 }
 
 .active-operator {
-    background-color: orange;
-    color: white;
+    background-color: #ff66c4;
     font-weight: bold;
 }
