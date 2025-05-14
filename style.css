@@ -23,7 +23,16 @@ html, body {
 /* 바닥에 떨어지는 애니메이션 */
 .fallen {
   animation: fallDown 1s ease-in forwards;
+  pointer-events: auto;
+  cursor: grab;
 }
+
+/* 다시 집어올리는 모션 */
+.rising {
+  animation: riseUp 0.8s ease-out forwards;
+  cursor: grabbing;
+}
+
 .calculator-container {
   display: flex;
   flex-direction: column;
@@ -50,9 +59,25 @@ html, body {
   border-radius: 50%;
 }
 
+.dot.clicked {
+  box-shadow: 0 0 5px 2px rgba(0,0,0,0.3);
+  transform: scale(1.2);
+  transition: all 0.2s ease;
+}
+
 .red { background-color: #f44336; }
 .yellow { background-color: #ffeb3b; }
 .green { background-color: #4caf50; }
+
+.dot:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.dot:active {
+  transform: scale(0.9);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4);
+}
 
 .display {
   width: 100%;
@@ -209,18 +234,72 @@ html, body {
   }
 }
 
-/* 바닥 낙하 효과 */
-@keyframes fallDown {
+/* 구겨지는 효과 */
+.folded {
+  animation: foldCalculator 0.7s ease forwards;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* 복구하는 효과 */
+.unfolding {
+  animation: unfoldCalculator 0.7s ease forwards;
+}
+
+/* 애니메이션 정의 */
+@keyframes foldCalculator {
   0% {
+    transform: scale(1) rotate(0deg);
     opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(300px) rotate(10deg) scale(0.9);
-    opacity: 0.7;
+    border-radius: 25px;
   }
   100% {
-    transform: translateY(500px) rotate(30deg) scale(0.5);
-    opacity: 0.3;
+    transform: scale(0.2) rotate(720deg);
+    opacity: 0.5;
+    border-radius: 50%;
+  }
+}
+
+@keyframes unfoldCalculator {
+  0% {
+    transform: scale(0.2) rotate(0deg);
+    opacity: 0.5;
+    border-radius: 50%;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    border-radius: 25px;
+  }
+}
+
+/* 축소된 아이콘 상태 */
+.iconified {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.15);
+  border-radius: 50%;
+  opacity: 0.8;
+  transition: all 0.6s ease;
+  z-index: 999;
+  cursor: pointer;
+}
+
+/* 복원 애니메이션 */
+.restoring {
+  animation: restoreCalculator 0.6s ease forwards;
+}
+
+@keyframes restoreCalculator {
+  0% {
+    transform: translate(-50%, -50%) scale(0.15);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    top: unset;
+    left: unset;
+    opacity: 1;
   }
 }

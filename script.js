@@ -11,6 +11,7 @@ let firstOperand = null;
 let secondOperand = null;
 let operator = null;
 let isNewInput = false;
+let isFallen = false; // 동작 상태 저장(빨간버튼)
 
 // 초기에는 악보 숨기기
 staffTrack.classList.add("hidden");
@@ -59,12 +60,6 @@ yellowBtn.addEventListener("click", () => {
 greenBtn.addEventListener("click", () => {
   staffTrack.classList.add("hidden");
   calculator.classList.remove("fallen");
-});
-
-// 빨간 버튼 → 계산기 바닥에 떨어뜨리기
-redBtn.addEventListener("click", () => {
-  calculator.classList.add("fallen");
-  staffTrack.classList.add("hidden"); // 동시에 악보도 숨기기
 });
 
 // 버튼 클릭 이벤트 리스터 추가
@@ -199,4 +194,40 @@ buttons.forEach(button => {
         // 폰트 크기 조절
         resizeFont();
     }); 
+});
+function disableButtons() {
+  buttons.forEach(btn => {
+    btn.style.pointerEvents = "none";
+    btn.style.opacity = "0.3";
+  });
+}
+
+function enableButtons() {
+  buttons.forEach(btn => {
+    btn.style.pointerEvents = "auto";
+    btn.style.opacity = "1";
+  });
+}
+
+// 빨간 버튼 누르면 접힘
+redBtn.addEventListener("click", () => {
+  calculator.classList.add("iconified");
+  calculator.classList.remove("restoring");
+  staffTrack.classList.add("hidden");
+  disableButtons(); // 버튼 비활성화
+});
+
+
+// 계산기 클릭 시 다시 복원
+calculator.addEventListener("dblclick", () => {
+  if (calculator.classList.contains("iconified")) {
+    calculator.classList.remove("iconified");
+    calculator.classList.add("restoring");
+
+    calculator.addEventListener("animationend", function handler() {
+      calculator.classList.remove("restoring");
+      enableButtons(); // 버튼 다시 활성화
+      calculator.removeEventListener("animationend", handler);
+    });
+  }
 });
