@@ -7,13 +7,24 @@
     <title>calculator</title>
     <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&display=swap" rel="stylesheet">
   </head>
   <body>
       <div class="calculator-container">
         <div class="header-bar">
-            <span class="dot red"></span>
-            <span class="dot yellow"></span>
-            <span class="dot green"></span>
+            <span class="dot red" id="red-dot"></span>
+            <span class="dot yellow" id="yellow-dot"></span>
+            <span class="dot green" id="green-dot"></span>
+            <div class="staff" id="staff-track">
+              <div class="clef">𝄞</div>
+              <div class="notes">
+                <span class="note">♩</span>
+                <span class="note">♪</span>
+                <span class="note">♬</span>
+                <span class="note">♪</span>
+                <span class="note">♬</span>
+              </div>
+            </div>
         </div>
         <div class="display">0</div>
         <div class="buttons">

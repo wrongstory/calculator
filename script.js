@@ -1,11 +1,19 @@
 // 모든 버튼 요소와 디스플레이 요소 선택
 const display = document.querySelector('.display');
 const buttons = document.querySelectorAll('.button');
+const redBtn = document.getElementById("red-dot");
+const yellowBtn = document.getElementById("yellow-dot");
+const greenBtn = document.getElementById("green-dot");
+const staffTrack = document.getElementById("staff-track");
+const calculator = document.querySelector(".calculator-container");
 
 let firstOperand = null;
 let secondOperand = null;
 let operator = null;
 let isNewInput = false;
+
+// 초기에는 악보 숨기기
+staffTrack.classList.add("hidden");
 
 // 디스플레이 이탈 입력 시, 폰트 크기 조절
 function resizeFont() {
@@ -40,6 +48,24 @@ function clearAll() {
     buttons.forEach(btn => btn.classList.remove('active-operator'));
     display.classList.remove('small', 'medium', 'large');
 }
+
+// 노란 버튼 → 악보 애니메이션 보이기
+yellowBtn.addEventListener("click", () => {
+  staffTrack.classList.remove("hidden");
+  calculator.classList.remove("fallen");
+});
+
+// 초록 버튼 → 악보 숨기고 계산기만 보이기
+greenBtn.addEventListener("click", () => {
+  staffTrack.classList.add("hidden");
+  calculator.classList.remove("fallen");
+});
+
+// 빨간 버튼 → 계산기 바닥에 떨어뜨리기
+redBtn.addEventListener("click", () => {
+  calculator.classList.add("fallen");
+  staffTrack.classList.add("hidden"); // 동시에 악보도 숨기기
+});
 
 // 버튼 클릭 이벤트 리스터 추가
 buttons.forEach(button => {
