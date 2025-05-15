@@ -5,6 +5,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Comfortaa', cursive;
+  user-select: none;
 }
 
 html, body {
@@ -25,12 +26,6 @@ html, body {
   animation: fallDown 1s ease-in forwards;
   pointer-events: auto;
   cursor: grab;
-}
-
-/* 다시 집어올리는 모션 */
-.rising {
-  animation: riseUp 0.8s ease-out forwards;
-  cursor: grabbing;
 }
 
 .calculator-container {
@@ -57,12 +52,6 @@ html, body {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-}
-
-.dot.clicked {
-  box-shadow: 0 0 5px 2px rgba(0,0,0,0.3);
-  transform: scale(1.2);
-  transition: all 0.2s ease;
 }
 
 .red { background-color: #f44336; }
@@ -234,31 +223,18 @@ html, body {
   }
 }
 
-/* 구겨지는 효과 */
-.folded {
-  animation: foldCalculator 0.7s ease forwards;
-  pointer-events: auto;
-  cursor: pointer;
-}
-
 /* 복구하는 효과 */
 .unfolding {
-  animation: unfoldCalculator 0.7s ease forwards;
+  animation: unfoldCalculator 0.3s ease forwards;
 }
 
-/* 애니메이션 정의 */
-@keyframes foldCalculator {
-  0% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-    border-radius: 25px;
-  }
-  100% {
-    transform: scale(0.2) rotate(720deg);
-    opacity: 0.5;
-    border-radius: 50%;
-  }
+/* 음악 관련 */
+.highlight {
+  box-shadow: 0 0 12px #ffd700;
+  transform: scale(1.1);
+  transition: all 0.2s;
 }
+/* 애니메이션 정의 */
 
 @keyframes unfoldCalculator {
   0% {
@@ -273,33 +249,25 @@ html, body {
   }
 }
 
-/* 축소된 아이콘 상태 */
-.iconified {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.15);
-  border-radius: 50%;
-  opacity: 0.8;
-  transition: all 0.6s ease;
-  z-index: 999;
+/*=======================================*/
+.fallen-calc {
+  font-size: 5rem;
   cursor: pointer;
+  transition: transform 0.3s;
+  text-align: center;
 }
 
-/* 복원 애니메이션 */
-.restoring {
-  animation: restoreCalculator 0.6s ease forwards;
+.pick-up {
+  animation: pickUp 0.5s ease-out forwards;
 }
 
-@keyframes restoreCalculator {
-  0% {
-    transform: translate(-50%, -50%) scale(0.15);
-    opacity: 0.8;
+@keyframes pickUp {
+  from {
+    transform: translateY(0) scale(1) rotate(0);
+    opacity: 1;
   }
-  100% {
-    transform: translate(0, 0) scale(1);
-    top: unset;
-    left: unset;
+  to {
+    transform: translateY(0) scale(1) rotate(0);
     opacity: 1;
   }
 }

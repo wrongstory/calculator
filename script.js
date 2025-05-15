@@ -7,11 +7,40 @@ const greenBtn = document.getElementById("green-dot");
 const staffTrack = document.getElementById("staff-track");
 const calculator = document.querySelector(".calculator-container");
 
+const scene = document.getElementById("scene");
+const fallenCalc = scene.querySelector('.fallen-calc');
+
 let firstOperand = null;
 let secondOperand = null;
 let operator = null;
 let isNewInput = false;
 let isFallen = false; // 동작 상태 저장(빨간버튼)
+let musicMode = false;
+let musicInput = ""; // 노래 모드용 입력값 저장
+let musicReady = false;
+let musicPlayed = false;
+
+const musicFreqMap = {
+      '1': 261.63,  // C4
+      '2': 293.66,  // D4
+      '3': 329.63,  // E4
+      '4': 349.23,  // F4
+      '5': 392.00,  // G4
+      '6': 440.00,  // A4
+      '7': 493.88,  // B4
+      '8': 523.25,  // C5
+      '9': 587.33,  // D5
+      '0': 659.26,  // E5
+      '+': 698.46,  // F5
+      '-': 783.99,  // G5
+      '*': 880.00,  // A5
+      '/': 987.77,  // B5
+      '%': 1046.50, // C6
+      'C': 1174.66, // D6
+      '±': 1318.51, // E6
+      '.': 1396.91  // F6
+    };
+const END_NOTE = 1661.22; // 종료음 (E6~F#6)
 
 // 초기에는 악보 숨기기
 staffTrack.classList.add("hidden");
@@ -54,6 +83,10 @@ function clearAll() {
 yellowBtn.addEventListener("click", () => {
   staffTrack.classList.remove("hidden");
   calculator.classList.remove("fallen");
+  musicMode = true;
+  musicInput = "";
+  musicReady = true;   // 연주 대기 상태
+  musicPlayed = false; // 아직 연주 안됨
 });
 
 // 초록 버튼 → 악보 숨기고 계산기만 보이기
@@ -68,7 +101,29 @@ buttons.forEach(button => {
         // 클릭 이벤트 발생하면 클릭 값 가져옴
         const value = button.textContent;
         console.log(`${value}버튼`);
- 
+
+        let noteValue = value;
+        if (musicMode) {       
+            // 첫 입력이 숫자가 아니거나 0이면 10으로 간주
+            if (musicInput.length === 0 && (!/^[1-9]$/.test(value))) {
+                noteValue = '10';
+            }
+
+            if (value === '=') {
+                playNote(END_NOTE);
+                // 결과를 정수로 만들고 앞 8자리만 추출해 노래방 번호처럼 표시
+                let result = parseFloat(display.textContent);
+                result = isNaN(result) ? 0 : Math.floor(result).toString().padStart(8, '0');
+                display.textContent = "🔢" + result.slice(0, 8);
+                musicMode = false;
+                return;
+            }
+
+            const freq = musicFreqMap[noteValue];
+            if (freq) playNote(freq);
+            musicInput += value;
+        }
+
         // 클래스가 operator인 경우에만 처리
         if(button.classList.contains('operator')) {
             if(value === '=') {
@@ -211,23 +266,116 @@ function enableButtons() {
 
 // 빨간 버튼 누르면 접힘
 redBtn.addEventListener("click", () => {
-  calculator.classList.add("iconified");
-  calculator.classList.remove("restoring");
+  calculator.classList.add("hidden");   // 기존 계산기 숨김
   staffTrack.classList.add("hidden");
-  disableButtons(); // 버튼 비활성화
+  scene.classList.remove("hidden");     // 떨어진 장면 보여줌
+  disableButtons();
 });
 
 
 // 계산기 클릭 시 다시 복원
-calculator.addEventListener("dblclick", () => {
-  if (calculator.classList.contains("iconified")) {
-    calculator.classList.remove("iconified");
-    calculator.classList.add("restoring");
+scene.addEventListener("click", () => {
+  fallenCalc.classList.add("pick-up");
 
-    calculator.addEventListener("animationend", function handler() {
-      calculator.classList.remove("restoring");
-      enableButtons(); // 버튼 다시 활성화
-      calculator.removeEventListener("animationend", handler);
+  fallenCalc.addEventListener("animationend", function handler() {
+    fallenCalc.classList.remove("pick-up");
+    scene.classList.add("hidden");        // 장면 숨기기
+    calculator.classList.remove("hidden"); // 계산기 복원
+    calculator.classList.add("unfolding");
+
+    calculator.addEventListener("animationend", function handler2() {
+      calculator.classList.remove("unfolding");
+      enableButtons();
+      calculator.removeEventListener("animationend", handler2);
     });
+
+    fallenCalc.removeEventListener("animationend", handler);
+  });
+});
+
+// 음계 처리
+function playNote(freq) {
+  const context = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = context.createOscillator();
+  const gainNode = context.createGain();
+
+  oscillator.type = 'sine';
+  oscillator.frequency.value = freq;
+  oscillator.connect(gainNode);
+  gainNode.connect(context.destination);
+
+  oscillator.start();
+  gainNode.gain.setValueAtTime(0.2, context.currentTime); // 소리 크기
+  gainNode.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.4); // 감쇠
+  oscillator.stop(context.currentTime + 0.4);
+}
+
+function playSongWithChords(songArray) {
+  let i = 0;
+  function step() {
+    if (i >= songArray.length) return;
+    const { notes, duration } = songArray[i];
+
+    // 하이라이트 적용
+    notes.forEach(note => {
+      const btn = [...buttons].find(b => b.textContent === note);
+      if (btn) btn.classList.add("highlight");
+    });
+
+    // 사운드 출력
+    playChord(notes, duration);
+
+    setTimeout(() => {
+      // 하이라이트 제거
+      notes.forEach(note => {
+        const btn = [...buttons].find(b => b.textContent === note);
+        if (btn) btn.classList.remove("highlight");
+      });
+      i++;
+      step();
+    }, duration);
+  }
+  step();
+}
+
+
+function playChord(notes, duration) {
+  const context = new (window.AudioContext || window.webkitAudioContext)();
+  const now = context.currentTime;
+
+  notes.forEach(note => {
+    const freq = musicFreqMap[note];
+    if (!freq) return;
+
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(now);
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration / 1000);
+    osc.stop(now + duration / 1000);
+  });
+}
+
+
+function mapToSymbol(key) {
+  if (key === '±') return '±';
+  if (key === '%') return '%';
+  return key;
+}
+
+staffTrack.addEventListener("click", () => {
+  if (musicMode && musicReady && !musicPlayed) {
+    fetch('./to_zanarkand_full_1min.json')
+      .then(res => res.json())
+      .then(song => {
+        playSongWithChords(song);
+        musicPlayed = true;  // 1회 연주 완료
+      });
   }
 });
